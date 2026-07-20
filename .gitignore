@@ -1,0 +1,22 @@
+# Entorno virtual
+backend/.venv/
+.venv/
+
+# Variables de entorno
+.env
+backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Django
+db.sqlite3
+media/
+
+# VS Code
+.vscode/
+
+# Node
+node_modules/
+dist/
