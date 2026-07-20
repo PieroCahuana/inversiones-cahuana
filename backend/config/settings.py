@@ -39,15 +39,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework_simplejwt.token_blacklist",
 
     # Aplicaciones de terceros
     "rest_framework",
     "corsheaders",
     "drf_spectacular",
+    "rest_framework_simplejwt.token_blacklist",
 
     # Aplicaciones del proyecto
     "apps.users.apps.UsersConfig",
+    "apps.brands.apps.BrandsConfig",
 ]
 
 MIDDLEWARE = [
@@ -162,3 +163,6 @@ SPECTACULAR_SETTINGS = {
 }
 
 AUTH_USER_MODEL = "users.User"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
