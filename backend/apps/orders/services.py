@@ -195,3 +195,171 @@ class OrderService:
         cart.items.all().delete()
 
         return order
+    
+
+class OrderManagementService:
+    ALLOWED_STATUS_TRANSITIONS = {
+        Order.Status.PENDING: {
+            Order.Status.CONFIRMED,
+            Order.Status.CANCELLED,
+        },
+        Order.Status.CONFIRMED: {
+            Order.Status.PROCESSING,
+            Order.Status.CANCELLED,
+        },
+        Order.Status.PROCESSING: {
+            Order.Status.SHIPPED,
+            Order.Status.CANCELLED,
+        },
+        Order.Status.SHIPPED: {
+            Order.Status.DELIVERED,
+        },
+        Order.Status.DELIVERED: set(),
+        Order.Status.CANCELLED: set(),
+    }
+
+    @staticmethod
+    @transaction.atomic
+    def update_status(
+        *,
+        order_id: int,
+        new_status: str,
+        user,
+    ) -> Order:
+        order = (
+            Order.objects
+            .select_for_update()
+            .prefetch_related("items__product")
+            .get(pk=order_id)
+        )
+
+        current_status = order.status
+
+        if new_status == current_status:
+            return order
+
+        allowed_statuses = OrderManagementService.ALLOWED_STATUS_TRANSITIONS.get(
+            current_status,
+            set(),
+        )
+
+        if new_status not in allowed_statuses:
+            raise ValidationError(
+                {
+                    "status": (
+                        f"No se puede cambiar el pedido de "
+                        f"{order.get_status_display()} a "
+                        f"{dict(Order.Status.choices).get(new_status, new_status)}."
+                    )
+                }
+            )
+
+        if new_status == Order.Status.CANCELLED:
+            OrderManagementService._restore_stock(
+                order=order,
+                user=user,
+            )
+
+        order.status = new_status
+
+        update_fields = [
+            "status",
+            "updated_at",
+        ]
+
+        if new_status == Order.Status.CANCELLED:
+            update_fields.append("payment_status")
+
+        order.save(update_fields=update_fields)
+
+        return order
+
+    @staticmethod
+    @transaction.atomic
+    def update_payment_status(
+        *,
+        order_id: int,
+        new_payment_status: str,
+    ) -> Order:
+        order = Order.objects.select_for_update().get(pk=order_id)
+
+        if order.status == Order.Status.CANCELLED:
+            raise ValidationError(
+                {
+                    "payment_status": (
+                        "No se puede modificar el pago de un pedido cancelado."
+                    )
+                }
+            )
+
+        if (
+            new_payment_status == Order.PaymentStatus.PAID
+            and order.payment_status == Order.PaymentStatus.REFUNDED
+        ):
+            raise ValidationError(
+                {
+                    "payment_status": (
+                        "Un pago reembolsado no puede volver a estado pagado."
+                    )
+                }
+            )
+
+        order.payment_status = new_payment_status
+        order.save(
+            update_fields=[
+                "payment_status",
+                "updated_at",
+            ]
+        )
+
+        return order
+
+    @staticmethod
+    def _restore_stock(*, order: Order, user) -> None:
+        order_items = list(
+            order.items
+            .select_related("product")
+            .order_by("product_id")
+        )
+
+        product_ids = sorted({
+            item.product_id
+            for item in order_items
+        })
+
+        locked_products = {
+            product.id: product
+            for product in (
+                Product.objects
+                .select_for_update()
+                .filter(id__in=product_ids)
+                .order_by("id")
+            )
+        }
+
+        for item in order_items:
+            product = locked_products[item.product_id]
+            previous_stock = product.stock
+            new_stock = previous_stock + item.quantity
+
+            product.stock = new_stock
+            product.save(
+                update_fields=[
+                    "stock",
+                    "updated_at",
+                ]
+            )
+
+            InventoryMovement.objects.create(
+                product=product,
+                movement_type=InventoryMovement.MovementType.RETURN,
+                quantity=item.quantity,
+                previous_stock=previous_stock,
+                new_stock=new_stock,
+                reason="Devolución automática por cancelación de pedido",
+                reference=order.order_number,
+                created_by=user,
+            )
+
+        if order.payment_status == Order.PaymentStatus.PAID:
+            order.payment_status = Order.PaymentStatus.REFUNDED

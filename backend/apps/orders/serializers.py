@@ -186,3 +186,23 @@ class CheckoutSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 {"detail": exc.messages}
             )
+        
+
+class OrderStatusUpdateSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(
+        choices=Order.Status.choices,
+    )
+
+    def validate_status(self, value: str) -> str:
+        if value == Order.Status.PENDING:
+            raise serializers.ValidationError(
+                "No se puede regresar un pedido al estado pendiente."
+            )
+
+        return value
+
+
+class OrderPaymentStatusUpdateSerializer(serializers.Serializer):
+    payment_status = serializers.ChoiceField(
+        choices=Order.PaymentStatus.choices,
+    )

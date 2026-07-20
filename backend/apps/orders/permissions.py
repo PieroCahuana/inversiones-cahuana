@@ -12,3 +12,20 @@ class IsActiveUser(BasePermission):
             and user.is_authenticated
             and user.is_active
         )
+    
+
+class IsOrderAdmin(BasePermission):
+    message = "Solo los administradores pueden gestionar pedidos."
+
+    def has_permission(self, request, view) -> bool:
+        user = request.user
+
+        return bool(
+            user
+            and user.is_authenticated
+            and (
+                user.is_superuser
+                or user.is_staff
+                or getattr(user, "role", None) == "admin"
+            )
+        )
