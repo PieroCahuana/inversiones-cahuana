@@ -1,0 +1,18 @@
+from rest_framework.permissions import BasePermission
+
+
+class IsInventoryManager(BasePermission):
+    message = "Solo administradores o personal autorizado pueden gestionar inventario."
+
+    def has_permission(self, request, view) -> bool:
+        user = request.user
+
+        return bool(
+            user
+            and user.is_authenticated
+            and (
+                user.is_superuser
+                or user.is_staff
+                or getattr(user, "role", None) == "admin"
+            )
+        )

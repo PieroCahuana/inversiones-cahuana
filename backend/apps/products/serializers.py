@@ -189,6 +189,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         read_only_fields = (
             "id",
             "slug",
+            "stock",
             "current_price",
             "has_discount",
             "is_in_stock",
