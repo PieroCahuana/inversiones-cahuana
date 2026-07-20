@@ -105,3 +105,33 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             counter += 1
 
         return username
+    
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+            "phone",
+        )
+
+    def validate_first_name(self, value: str) -> str:
+        return value.strip()
+
+    def validate_last_name(self, value: str) -> str:
+        return value.strip()
+
+    def validate_phone(self, value: str) -> str:
+        phone = value.strip()
+
+        if phone and not phone.isdigit():
+            raise serializers.ValidationError(
+                "El teléfono solo debe contener números."
+            )
+
+        if phone and len(phone) != 9:
+            raise serializers.ValidationError(
+                "El teléfono debe contener 9 dígitos."
+            )
+
+        return phone

@@ -5,7 +5,11 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import UserRegisterSerializer, UserSerializer
+from .serializers import (
+    UserProfileUpdateSerializer,
+    UserRegisterSerializer,
+    UserSerializer,
+)
 
 
 class UserRegisterView(APIView):
@@ -44,3 +48,26 @@ class CurrentUserView(APIView):
     def get(self, request: Request) -> Response:
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+    @extend_schema(
+        request=UserProfileUpdateSerializer,
+        responses={200: UserSerializer},
+        description="Actualiza parcialmente el perfil del usuario autenticado.",
+        tags=["Usuarios"],
+    )
+    def patch(self, request: Request) -> Response:
+        serializer = UserProfileUpdateSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        return Response(
+            {
+                "message": "Perfil actualizado correctamente.",
+                "user": UserSerializer(user).data,
+            },
+            status=status.HTTP_200_OK,
+        )
