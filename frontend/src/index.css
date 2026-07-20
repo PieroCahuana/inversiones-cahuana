@@ -10,10 +10,24 @@
     "Segoe UI",
     sans-serif;
 
-  color: #111827;
-  background: #f8fafc;
+  color: #102a4e;
+  background: #ffffff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
+  --container-width: 1380px;
+  --ink: #102a4e;
+  --muted: #6c798a;
+  --canvas: #ffffff;
+  --paper: #ffffff;
+  --violet: #1454d8;
+  --violet-dark: #0d45bd;
+  --violet-soft: #edf3ff;
+  --line: #e1e7ef;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html {
@@ -24,10 +38,12 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  overflow-x: hidden;
+  background: var(--canvas);
+  color: var(--ink);
 }
 
 button,
-a,
 input,
 textarea,
 select {
@@ -39,6 +55,187 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
 #root {
   min-height: 100vh;
+}
+
+::selection {
+  background: var(--violet);
+  color: #ffffff;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% center;
+  }
+
+  to {
+    background-position: -200% center;
+  }
+}
+
+@layer utilities {
+  .site-container {
+    width: min(100% - 2rem, var(--container-width));
+    margin-inline: auto;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      110deg,
+      #ffffff 10%,
+      #a1a1aa 35%,
+      #ffffff 50%,
+      #69a7ff 75%,
+      #ffffff 95%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 7s linear infinite;
+  }
+
+  .hero-grid {
+    background-image:
+      linear-gradient(
+        rgba(255, 255, 255, 0.045) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.045) 1px,
+        transparent 1px
+      );
+
+    background-size: 64px 64px;
+    mask-image: linear-gradient(to bottom, black, transparent 92%);
+  }
+
+  .glass {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(22px);
+  }
+
+  .glass-light {
+    border: 1px solid rgba(24, 24, 27, 0.08);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(22px);
+  }
+
+  .premium-shadow {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 16px 50px rgba(15, 23, 42, 0.08);
+  }
+
+  .display-title {
+    letter-spacing: -0.055em;
+    line-height: 0.98;
+  }
+
+  .eyebrow {
+    color: #1454d8;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .premium-card-shadow {
+    box-shadow: 0 22px 60px rgba(13, 38, 76, 0.09);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 6s ease-in-out infinite;
+  }
+
+  .marquee-track {
+    width: max-content;
+    animation: marquee 24s linear infinite;
+  }
+
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+
+  .focus-ring:focus-visible {
+    outline: 3px solid rgba(20, 84, 216, 0.24);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

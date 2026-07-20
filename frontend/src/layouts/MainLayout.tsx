@@ -1,12 +1,20 @@
 import { Outlet } from "react-router";
 
+import { Footer } from "../components/layout/Footer";
 import { Header } from "../components/layout/Header";
+import { WhatsAppButton } from "../components/common/WhatsAppButton";
 
 export function MainLayout() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="flex min-h-screen flex-col bg-white text-[#102a4e]">
       <Header />
-      <Outlet />
+
+      <div className="flex-1">
+        <Outlet />
+      </div>
+
+      <Footer />
+      <WhatsAppButton />
     </div>
   );
 }
