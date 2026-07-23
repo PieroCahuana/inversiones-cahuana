@@ -54,6 +54,18 @@ class AuthenticationAPITests(APITestCase):
         self.assertIn("access", tokens)
         self.assertIn("refresh", tokens)
 
+    def test_superuser_receives_admin_role(self):
+        superuser = self.user_model.objects.create_superuser(
+            username="superadmin",
+            email="superadmin@example.com",
+            password=self.password,
+        )
+
+        self.assertEqual(superuser.role, self.user_model.Role.ADMIN)
+        self.assertTrue(superuser.is_verified)
+        self.assertTrue(superuser.is_staff)
+        self.assertTrue(superuser.is_superuser)
+
     def test_current_user_and_profile_update(self):
         tokens = self.obtain_tokens()
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {tokens['access']}")
