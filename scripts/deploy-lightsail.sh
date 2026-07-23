@@ -28,8 +28,8 @@ docker compose --env-file "${ENV_FILE}" exec -T backend \
   python manage.py import_stand_inventory
 
 echo "Esperando el health check público..."
-docker compose --env-file "${ENV_FILE}" exec -T frontend \
-  wget --quiet --output-document=- http://localhost/api/health/
+docker compose --env-file "${ENV_FILE}" exec -T backend \
+  python -c "import urllib.request; request = urllib.request.Request('http://localhost:8000/api/health/', headers={'X-Forwarded-Proto': 'https'}); print(urllib.request.urlopen(request, timeout=3).read().decode())"
 echo
 
 curl --fail --silent --show-error \
