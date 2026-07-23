@@ -1,0 +1,12 @@
+www.{$APP_DOMAIN} {
+	redir https://{$APP_DOMAIN}{uri} permanent
+}
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+
+	@backend path /api/* /admin /admin/*
+	reverse_proxy @backend backend:8000
+
+	reverse_proxy frontend:80
+}

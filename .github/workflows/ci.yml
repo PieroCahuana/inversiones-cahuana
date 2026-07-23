@@ -51,5 +51,6 @@ jobs:
       - uses: actions/checkout@v4
       - run: docker compose --env-file .env.lightsail.example config --quiet
         env: { APP_ENV_FILE: .env.lightsail.example }
+      - run: docker run --rm -v "$PWD/Caddyfile:/etc/caddy/Caddyfile:ro" -e APP_DOMAIN=inversionescahuana.com caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile
       - run: docker compose --env-file .env.lightsail.example build
         env: { APP_ENV_FILE: .env.lightsail.example }

@@ -62,6 +62,11 @@ No uses `down -v` salvo que quieras borrar definitivamente base de datos y archi
 
 ## Producción
 
+- Define `APP_DOMAIN=inversionescahuana.com` en `.env.docker`.
+- Caddy emite y renueva automáticamente los certificados HTTPS del dominio
+  principal y de `www`.
+- Ejecuta `bash scripts/enable-domain.sh` para actualizar de forma segura las
+  variables del dominio y conservar una copia de `.env.docker`.
 - Configura dominio en `ALLOWED_HOSTS`, CORS, CSRF y `FRONTEND_URL`.
 - Activa redirección SSL, cookies seguras y HSTS después de habilitar HTTPS.
 - Configura SMTP para recuperación y correos transaccionales.

@@ -16,15 +16,25 @@ if grep -q "REEMPLAZAR_" "${ENV_FILE}"; then
   exit 1
 fi
 
+APP_DOMAIN="$(sed -n 's/^APP_DOMAIN=//p' "${ENV_FILE}" | tail -n 1 | tr -d '\r')"
+if [[ ! "${APP_DOMAIN}" =~ ^[A-Za-z0-9.-]+$ ]]; then
+  echo "APP_DOMAIN no esta definido o no es un dominio valido." >&2
+  exit 1
+fi
+
 docker compose --env-file "${ENV_FILE}" config --quiet
 docker compose --env-file "${ENV_FILE}" up --build -d
 docker compose --env-file "${ENV_FILE}" exec -T backend \
   python manage.py import_stand_inventory
 
 echo "Esperando el health check público..."
+docker compose --env-file "${ENV_FILE}" exec -T frontend \
+  wget --quiet --output-document=- http://localhost/api/health/
+echo
+
 curl --fail --silent --show-error \
-  --retry 12 --retry-delay 5 --retry-connrefused \
-  "http://127.0.0.1/api/health/"
+  --retry 24 --retry-delay 5 --retry-connrefused --retry-all-errors \
+  "https://${APP_DOMAIN}/api/health/"
 echo
 
 docker compose --env-file "${ENV_FILE}" ps
