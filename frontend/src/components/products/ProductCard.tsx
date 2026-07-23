@@ -1,10 +1,15 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import {
   ArrowUpRight,
   Heart,
   ShoppingBag,
 } from "lucide-react";
-import { Link } from "react-router";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 
+import { addCartItem } from "../../api/cart";
+import { useAuth } from "../../hooks/useAuth";
 import type { ProductSummary } from "../../types/product";
 
 interface ProductCardProps {
@@ -30,6 +35,35 @@ function getConditionLabel(condition: ProductSummary["condition"]) {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const [feedback, setFeedback] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+  const addMutation = useMutation({
+    mutationFn: () => addCartItem(product.id, 1),
+    onSuccess: () => {
+      setFeedback("Agregado correctamente");
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: (error) => {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        navigate("/login", { state: { from: `${location.pathname}${location.search}` } });
+        return;
+      }
+      setFeedback("No se pudo agregar");
+    },
+  });
+
+  function handleAddToCart() {
+    if (!isAuthenticated) {
+      navigate("/login", { state: { from: `${location.pathname}${location.search}` } });
+      return;
+    }
+    setFeedback("");
+    addMutation.mutate();
+  }
+
   return (
     <article className="premium-card-shadow group flex h-full flex-col overflow-hidden rounded-[20px] border border-[#e1e7ef] bg-white transition duration-300 hover:-translate-y-1 hover:border-[#b9cae4] hover:shadow-[0_24px_55px_rgba(17,55,107,0.13)]">
       <div className="relative aspect-[4/3] overflow-hidden bg-[#f3f6fa]">
@@ -132,11 +166,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
           <button
             type="button"
-            disabled={!product.is_in_stock}
+            onClick={handleAddToCart}
+            disabled={!product.is_in_stock || addMutation.isPending}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#1454d8] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#0d45bd] disabled:bg-zinc-300"
           >
             <ShoppingBag size={17} />
-            Agregar al carrito
+            {addMutation.isPending ? "Agregando..." : feedback || "Agregar al carrito"}
           </button>
         </div>
       </div>

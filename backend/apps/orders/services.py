@@ -6,6 +6,10 @@ from django.db import transaction
 from apps.carts.models import Cart, CartItem
 from apps.inventory.models import InventoryMovement
 from apps.products.models import Product
+from apps.storefront.models import Notification, StoreSettings
+from apps.storefront.services import notify_admins, notify_user
+from apps.promotions.models import CouponUsage
+from apps.promotions.services import CouponService, PromotionService
 
 from .models import Order, OrderItem
 
@@ -25,6 +29,7 @@ class OrderService:
         address: str,
         address_reference: str = "",
         notes: str = "",
+        coupon_code: str = "",
     ) -> Order:
         try:
             cart = Cart.objects.select_for_update().get(user=user)
@@ -115,7 +120,7 @@ class OrderService:
                     }
                 )
 
-            unit_price = product.current_price
+            unit_price = PromotionService.get_price(product)
             item_subtotal = unit_price * cart_item.quantity
             subtotal += item_subtotal
 
@@ -128,15 +133,23 @@ class OrderService:
                 }
             )
 
-        # Por ahora dejamos el envío gratuito.
-        shipping_cost = Decimal("0.00")
-        total = subtotal + shipping_cost
+        store_settings = StoreSettings.load()
+        coupon = None
+        discount_amount = Decimal("0.00")
+        if coupon_code:
+            coupon, discount_amount = CouponService.validate(code=coupon_code, user=user, subtotal=subtotal)
+        shipping_cost = store_settings.shipping_cost
+        if store_settings.free_shipping_minimum is not None and subtotal >= store_settings.free_shipping_minimum:
+            shipping_cost = Decimal("0.00")
+        total = subtotal - discount_amount + shipping_cost
 
         order = Order.objects.create(
             user=user,
             payment_method=payment_method,
             subtotal=subtotal,
             shipping_cost=shipping_cost,
+            discount_amount=discount_amount,
+            coupon_code=coupon.code if coupon else "",
             total=total,
             recipient_name=recipient_name,
             recipient_phone=recipient_phone,
@@ -192,7 +205,35 @@ class OrderService:
 
         OrderItem.objects.bulk_create(order_items)
 
+        if coupon:
+            CouponUsage.objects.create(coupon=coupon, user=user, order=order, discount_amount=discount_amount)
+
         cart.items.all().delete()
+
+        notify_user(
+            user=user,
+            notification_type=Notification.Type.ORDER,
+            title="Pedido recibido",
+            message=f"Recibimos tu pedido {order.order_number} por un total de S/ {order.total}.",
+            link=f"/orders/{order.order_number}",
+            email_subject=f"Pedido {order.order_number} recibido",
+        )
+        notify_admins(
+            notification_type=Notification.Type.ORDER,
+            title="Nuevo pedido",
+            message=f"Se registró el pedido {order.order_number} por S/ {order.total}.",
+            link=f"/admin/orders/{order.order_number}",
+            email_subject=f"Nuevo pedido {order.order_number}",
+        )
+        for prepared_item in prepared_items:
+            product = prepared_item["product"]
+            if product.stock <= store_settings.low_stock_threshold:
+                notify_admins(
+                    notification_type=Notification.Type.INVENTORY,
+                    title="Stock bajo",
+                    message=f"{product.name} quedó con {product.stock} unidades.",
+                    link="/admin/inventory",
+                )
 
         return order
     
@@ -272,6 +313,15 @@ class OrderManagementService:
 
         order.save(update_fields=update_fields)
 
+        notify_user(
+            user=order.user,
+            notification_type=Notification.Type.ORDER,
+            title="Estado de pedido actualizado",
+            message=f"Tu pedido {order.order_number} ahora está {order.get_status_display().lower()}.",
+            link=f"/orders/{order.order_number}",
+            email_subject=f"Actualización de tu pedido {order.order_number}",
+        )
+
         return order
 
     @staticmethod
@@ -310,6 +360,15 @@ class OrderManagementService:
                 "payment_status",
                 "updated_at",
             ]
+        )
+
+        notify_user(
+            user=order.user,
+            notification_type=Notification.Type.PAYMENT,
+            title="Estado de pago actualizado",
+            message=f"El pago del pedido {order.order_number} ahora figura como {order.get_payment_status_display().lower()}.",
+            link=f"/orders/{order.order_number}",
+            email_subject=f"Actualización de pago {order.order_number}",
         )
 
         return order

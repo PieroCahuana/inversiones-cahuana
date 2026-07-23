@@ -1,36 +1,39 @@
 import axios from "axios";
 import { Eye, EyeOff, LockKeyhole, ShieldCheck } from "lucide-react";
 import { type FormEvent, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, Navigate, useLocation, useNavigate } from "react-router";
 
-import { apiClient } from "../../api/client";
+import { useAuth } from "../../hooks/useAuth";
 
 export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated } = useAuth();
+
+  const destination = (location.state as { from?: string } | null)?.from ?? "/";
+
+  if (isAuthenticated) {
+    return <Navigate to={destination} replace />;
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setIsLoading(true);
+    setIsSubmitting(true);
     const data = new FormData(event.currentTarget);
 
     try {
-      const response = await apiClient.post<{ access: string; refresh: string }>("/auth/token/", {
-        username: data.get("username"),
-        password: data.get("password"),
-      });
-      localStorage.setItem("access_token", response.data.access);
-      localStorage.setItem("refresh_token", response.data.refresh);
-      navigate("/");
+      await login(String(data.get("email")), String(data.get("password")));
+      navigate(destination, { replace: true });
     } catch (requestError) {
       setError(axios.isAxiosError(requestError) && requestError.response?.status === 401
-        ? "El usuario o la contraseña no son correctos."
+        ? "El correo o la contraseña no son correctos."
         : "No pudimos iniciar sesión. Inténtalo nuevamente.");
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   }
 
@@ -55,8 +58,8 @@ export function LoginPage() {
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <label className="block">
-              <span className="text-sm font-bold text-[#334862]">Usuario</span>
-              <input name="username" required autoComplete="username" className="mt-2 w-full rounded-xl border border-[#dce4ef] bg-[#f8fafc] px-4 py-3.5 outline-none transition focus:border-[#1454d8] focus:ring-4 focus:ring-[#1454d8]/10" placeholder="Tu nombre de usuario" />
+              <span className="text-sm font-bold text-[#334862]">Correo electrónico</span>
+              <input name="email" required type="email" autoComplete="email" className="mt-2 w-full rounded-xl border border-[#dce4ef] bg-[#f8fafc] px-4 py-3.5 outline-none transition focus:border-[#1454d8] focus:ring-4 focus:ring-[#1454d8]/10" placeholder="correo@ejemplo.com" />
             </label>
             <label className="block">
               <span className="text-sm font-bold text-[#334862]">Contraseña</span>
@@ -68,10 +71,12 @@ export function LoginPage() {
               </span>
             </label>
             {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</p>}
-            <button disabled={isLoading} className="w-full rounded-xl bg-[#1454d8] px-5 py-4 text-sm font-black text-white transition hover:bg-[#0d45bd] disabled:opacity-60">
-              {isLoading ? "Ingresando..." : "Ingresar a mi cuenta"}
+            <div className="-mt-2 text-right"><Link to="/forgot-password" className="text-xs font-black text-[#1454d8] hover:underline">Olvidé mi contraseña</Link></div>
+            <button disabled={isSubmitting} className="w-full rounded-xl bg-[#1454d8] px-5 py-4 text-sm font-black text-white transition hover:bg-[#0d45bd] disabled:opacity-60">
+              {isSubmitting ? "Ingresando..." : "Ingresar a mi cuenta"}
             </button>
           </form>
+          <p className="mt-6 text-center text-sm text-[#6c798a]">¿Todavía no tienes una cuenta? <Link to="/register" state={location.state} className="font-black text-[#1454d8] hover:underline">Regístrate</Link></p>
         </section>
       </div>
     </main>

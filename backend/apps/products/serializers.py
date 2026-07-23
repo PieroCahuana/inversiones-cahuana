@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from rest_framework import serializers
 
 from apps.brands.models import Brand
@@ -87,12 +89,8 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     brand = serializers.CharField(source="brand.name", read_only=True)
     category = serializers.CharField(source="category.name", read_only=True)
-    current_price = serializers.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        read_only=True,
-    )
-    has_discount = serializers.BooleanField(read_only=True)
+    current_price = serializers.SerializerMethodField()
+    has_discount = serializers.SerializerMethodField()
     is_in_stock = serializers.BooleanField(read_only=True)
     primary_image = serializers.SerializerMethodField()
 
@@ -114,6 +112,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             "is_in_stock",
             "condition",
             "is_featured",
+            "is_active",
             "primary_image",
         )
 
@@ -133,6 +132,13 @@ class ProductListSerializer(serializers.ModelSerializer):
 
         return image.image.url
 
+    def get_current_price(self, obj: Product) -> Decimal:
+        from apps.promotions.services import PromotionService
+        return PromotionService.get_price(obj)
+
+    def get_has_discount(self, obj: Product) -> bool:
+        return self.get_current_price(obj) < obj.price
+
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     brand = serializers.SerializerMethodField()
@@ -151,12 +157,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True,
     )
-    current_price = serializers.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        read_only=True,
-    )
-    has_discount = serializers.BooleanField(read_only=True)
+    current_price = serializers.SerializerMethodField()
+    has_discount = serializers.SerializerMethodField()
     is_in_stock = serializers.BooleanField(read_only=True)
 
     class Meta:
@@ -274,3 +276,10 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "name": obj.category.name,
             "slug": obj.category.slug,
         }
+
+    def get_current_price(self, obj: Product) -> Decimal:
+        from apps.promotions.services import PromotionService
+        return PromotionService.get_price(obj)
+
+    def get_has_discount(self, obj: Product) -> bool:
+        return self.get_current_price(obj) < obj.price

@@ -5,9 +5,11 @@ from .views import (
     AdminOrderListView,
     AdminOrderPaymentUpdateView,
     AdminOrderStatusUpdateView,
+    AdminPaymentReceiptReviewView,
     CheckoutView,
     OrderDetailView,
     OrderListView,
+    PaymentReceiptView,
 )
 
 
@@ -23,11 +25,6 @@ urlpatterns = [
         "checkout/",
         CheckoutView.as_view(),
         name="checkout",
-    ),
-    path(
-        "<str:order_number>/",
-        OrderDetailView.as_view(),
-        name="detail",
     ),
     path(
         "admin/",
@@ -48,5 +45,12 @@ urlpatterns = [
         "admin/<str:order_number>/payment/",
         AdminOrderPaymentUpdateView.as_view(),
         name="admin-payment-update",
+    ),
+    path("admin/<str:order_number>/receipt/", AdminPaymentReceiptReviewView.as_view(), name="admin-receipt-review"),
+    path("<str:order_number>/receipt/", PaymentReceiptView.as_view(), name="payment-receipt"),
+    path(
+        "<str:order_number>/",
+        OrderDetailView.as_view(),
+        name="detail",
     ),
 ]

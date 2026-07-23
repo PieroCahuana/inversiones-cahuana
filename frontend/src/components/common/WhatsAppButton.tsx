@@ -1,14 +1,14 @@
 import { MessageCircle } from "lucide-react";
-
-const WHATSAPP_NUMBER = "51954107191";
+import { useStoreSettings } from "../../hooks/useStoreSettings";
 
 const MESSAGE = encodeURIComponent(
   "Hola, vi el catálogo de Inversiones Cahuana y quisiera recibir información sobre sus equipos.",
 );
 
 export function WhatsAppButton() {
+  const { data } = useStoreSettings();
   const whatsappUrl =
-    `https://wa.me/${WHATSAPP_NUMBER}?text=${MESSAGE}`;
+    `https://wa.me/${data?.whatsapp || "51954107191"}?text=${MESSAGE}`;
 
   return (
     <a

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Order, OrderItem
+from .models import Order, OrderItem, PaymentReceipt
 
 
 class OrderItemInline(admin.TabularInline):
@@ -98,3 +98,11 @@ class OrderItemAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None) -> bool:
         return False
+
+
+@admin.register(PaymentReceipt)
+class PaymentReceiptAdmin(admin.ModelAdmin):
+    list_display = ("order", "status", "reviewed_by", "updated_at")
+    list_filter = ("status", "updated_at")
+    search_fields = ("order__order_number", "order__user__email")
+    readonly_fields = ("order", "file", "customer_note", "created_at", "updated_at")

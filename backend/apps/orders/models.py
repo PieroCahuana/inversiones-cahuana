@@ -79,6 +79,13 @@ class Order(models.Model):
         validators=[MinValueValidator(Decimal("0.00"))],
         verbose_name="costo de envío",
     )
+    discount_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+    )
+    coupon_code = models.CharField(max_length=40, blank=True)
     total = models.DecimalField(
         max_digits=12,
         decimal_places=2,
@@ -195,3 +202,30 @@ class OrderItem(models.Model):
 
     def __str__(self) -> str:
         return f"{self.quantity} × {self.product_name}"
+
+
+def payment_receipt_upload_to(instance, filename: str) -> str:
+    return f"payment_receipts/{instance.order.order_number}/{filename}"
+
+
+class PaymentReceipt(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pendiente de revisión"
+        APPROVED = "approved", "Aprobado"
+        REJECTED = "rejected", "Rechazado"
+
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name="payment_receipt")
+    file = models.FileField(upload_to=payment_receipt_upload_to)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    customer_note = models.CharField(max_length=255, blank=True)
+    review_note = models.CharField(max_length=255, blank=True)
+    reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name="reviewed_payment_receipts", null=True, blank=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+
+    def __str__(self) -> str:
+        return f"Comprobante {self.order.order_number}"

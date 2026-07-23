@@ -12,9 +12,11 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
+from .health import health_check
 
 
 urlpatterns = [
+    path("api/health/", health_check, name="health-check"),
     # Panel administrativo
     path("admin/", admin.site.urls),
 
@@ -59,6 +61,8 @@ urlpatterns = [
     path("api/inventory/", include("apps.inventory.urls")),
     path("api/cart/", include("apps.carts.urls")),
     path("api/orders/", include("apps.orders.urls")),
+    path("api/store/", include("apps.storefront.urls")),
+    path("api/commerce/", include("apps.promotions.urls")),
 ]
 
 if settings.DEBUG:

@@ -83,7 +83,8 @@ class CartItem(models.Model):
 
     @property
     def unit_price(self) -> Decimal:
-        return self.product.current_price
+        from apps.promotions.services import PromotionService
+        return PromotionService.get_price(self.product)
 
     @property
     def subtotal(self) -> Decimal:

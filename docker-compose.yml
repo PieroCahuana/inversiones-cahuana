@@ -1,0 +1,64 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    env_file: ${APP_ENV_FILE:-.env.docker}
+    environment:
+      POSTGRES_DB: ${DB_NAME:-inversiones_cahuana}
+      POSTGRES_USER: ${DB_USER:-cahuana}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD in .env.docker}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-cahuana} -d ${DB_NAME:-inversiones_cahuana}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: ${APP_ENV_FILE:-.env.docker}
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - media_data:/var/www/media:ro
+      - static_data:/var/www/static:ro
+    logging: *default-logging
+
+volumes:
+  postgres_data:
+  media_data:
+  static_data:

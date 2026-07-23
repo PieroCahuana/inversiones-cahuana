@@ -1,0 +1,22 @@
+import decimal
+import django.core.validators
+import django.db.models.deletion
+from django.conf import settings
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+    initial = True
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ("brands", "0001_initial"),
+        ("categories", "0001_initial"),
+        ("products", "0001_initial"),
+        ("orders", "0003_order_coupon_code_order_discount_amount"),
+    ]
+    operations = [
+        migrations.CreateModel(name="Banner", fields=[("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")), ("title", models.CharField(max_length=150)), ("subtitle", models.CharField(blank=True, max_length=255)), ("image_url", models.URLField()), ("button_text", models.CharField(default="Ver ofertas", max_length=50)), ("link", models.CharField(default="/products", max_length=255)), ("starts_at", models.DateTimeField()), ("ends_at", models.DateTimeField()), ("order", models.PositiveSmallIntegerField(default=0)), ("is_active", models.BooleanField(default=True)), ("created_at", models.DateTimeField(auto_now_add=True)), ("updated_at", models.DateTimeField(auto_now=True))], options={"ordering": ["order", "-created_at"]}),
+        migrations.CreateModel(name="Coupon", fields=[("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")), ("code", models.CharField(max_length=40, unique=True)), ("description", models.CharField(blank=True, max_length=255)), ("discount_type", models.CharField(choices=[("percentage", "Porcentaje"), ("fixed", "Monto fijo")], max_length=20)), ("value", models.DecimalField(decimal_places=2, max_digits=10, validators=[django.core.validators.MinValueValidator(decimal.Decimal("0.01"))])), ("minimum_purchase", models.DecimalField(decimal_places=2, default=decimal.Decimal("0.00"), max_digits=12)), ("maximum_discount", models.DecimalField(blank=True, decimal_places=2, max_digits=12, null=True)), ("starts_at", models.DateTimeField()), ("ends_at", models.DateTimeField()), ("usage_limit", models.PositiveIntegerField(blank=True, null=True)), ("usage_limit_per_user", models.PositiveIntegerField(default=1)), ("is_active", models.BooleanField(default=True)), ("created_at", models.DateTimeField(auto_now_add=True)), ("updated_at", models.DateTimeField(auto_now=True))]),
+        migrations.CreateModel(name="Promotion", fields=[("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")), ("name", models.CharField(max_length=150)), ("scope", models.CharField(choices=[("all", "Todo el catálogo"), ("category", "Categoría"), ("brand", "Marca"), ("product", "Producto")], default="all", max_length=20)), ("discount_percentage", models.DecimalField(decimal_places=2, max_digits=5, validators=[django.core.validators.MinValueValidator(decimal.Decimal("0.01")), django.core.validators.MaxValueValidator(decimal.Decimal("100.00"))])), ("starts_at", models.DateTimeField()), ("ends_at", models.DateTimeField()), ("priority", models.PositiveSmallIntegerField(default=0)), ("is_active", models.BooleanField(default=True)), ("created_at", models.DateTimeField(auto_now_add=True)), ("updated_at", models.DateTimeField(auto_now=True)), ("brand", models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name="promotions", to="brands.brand")), ("category", models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name="promotions", to="categories.category")), ("product", models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name="promotions", to="products.product"))], options={"ordering": ["-priority", "-created_at"]}),
+        migrations.CreateModel(name="CouponUsage", fields=[("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")), ("discount_amount", models.DecimalField(decimal_places=2, max_digits=12)), ("created_at", models.DateTimeField(auto_now_add=True)), ("coupon", models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name="usages", to="promotions.coupon")), ("order", models.OneToOneField(on_delete=django.db.models.deletion.PROTECT, related_name="coupon_usage", to="orders.order")), ("user", models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name="coupon_usages", to=settings.AUTH_USER_MODEL))], options={"ordering": ["-created_at"]}),
+    ]

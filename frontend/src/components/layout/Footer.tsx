@@ -7,6 +7,7 @@ import {
 import { Link } from "react-router";
 
 import { BrandLogo } from "../common/BrandLogo";
+import { useStoreSettings } from "../../hooks/useStoreSettings";
 
 const shopLinks = [
   {
@@ -29,6 +30,7 @@ const shopLinks = [
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const { data: settings } = useStoreSettings();
 
   return (
     <footer className="bg-[#071d41] text-white">
@@ -71,14 +73,14 @@ export function Footer() {
 
           <div className="mt-5 space-y-4">
             <a
-              href="tel:+51954107191"
+              href={`tel:+${settings?.phone || "51954107191"}`}
               className="flex items-start gap-3 text-sm text-zinc-400 transition hover:text-white"
             >
               <Phone
                 size={18}
                 className="mt-0.5 shrink-0"
               />
-              +51 954 107 191
+              {settings?.phone || "+51 954 107 191"}
             </a>
 
             <div className="flex items-start gap-3 text-sm leading-6 text-zinc-400">
@@ -87,13 +89,7 @@ export function Footer() {
                 className="mt-0.5 shrink-0"
               />
 
-              <span>
-                Jr. Leticia 949, Stand 109
-                <br />
-                Jr. Leticia 948, Stand 29B
-                <br />
-                Cercado de Lima
-              </span>
+              <span className="whitespace-pre-line">{settings?.address || "Jr. Leticia 949, Stand 109\nJr. Leticia 948, Stand 29B\nCercado de Lima"}</span>
             </div>
 
             <div className="flex items-start gap-3 text-sm text-zinc-400">
@@ -101,7 +97,7 @@ export function Footer() {
                 size={18}
                 className="mt-0.5 shrink-0"
               />
-              Soporte técnico especializado
+              {settings?.support_text || "Soporte técnico especializado"}
             </div>
           </div>
         </div>
@@ -112,7 +108,7 @@ export function Footer() {
           </h2>
 
           <a
-            href="https://www.facebook.com/61591996100219/"
+            href={settings?.facebook_url || "https://www.facebook.com/61591996100219/"}
             target="_blank"
             rel="noreferrer"
             className="mt-5 inline-flex items-center gap-3 rounded-xl border border-zinc-800 px-4 py-3 text-sm font-semibold text-zinc-300 transition hover:border-zinc-600 hover:bg-zinc-900 hover:text-white"

@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 User = get_user_model()
@@ -135,3 +136,60 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
             )
 
         return phone
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+    password_confirm = serializers.CharField(write_only=True)
+
+    def validate(self, attrs: dict) -> dict:
+        if attrs["password"] != attrs["password_confirm"]:
+            raise serializers.ValidationError(
+                {"password_confirm": "Las contraseñas no coinciden."}
+            )
+        validate_password(attrs["password"])
+        return attrs
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+    orders_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "id", "username", "email", "first_name", "last_name",
+            "full_name", "phone", "role", "is_verified", "is_active",
+            "orders_count", "last_login", "created_at", "updated_at",
+        )
+        read_only_fields = (
+            "id", "username", "email", "first_name", "last_name",
+            "full_name", "phone", "orders_count", "last_login",
+            "created_at", "updated_at",
+        )
+
+    def get_full_name(self, obj) -> str:
+        return obj.get_full_name()
+
+    def validate(self, attrs: dict) -> dict:
+        request = self.context.get("request")
+        if request and self.instance == request.user:
+            if attrs.get("is_active") is False:
+                raise serializers.ValidationError(
+                    {"is_active": "No puedes desactivar tu propia cuenta."}
+                )
+            if attrs.get("role") and attrs["role"] != User.Role.ADMIN:
+                raise serializers.ValidationError(
+                    {"role": "No puedes retirar tu propio rol de administrador."}
+                )
+        return attrs

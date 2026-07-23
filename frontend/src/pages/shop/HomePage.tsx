@@ -17,6 +17,7 @@ import {
 import { Link } from "react-router";
 
 import { getProducts } from "../../api/products";
+import { getActiveBanners } from "../../api/commerce";
 import heroCommerce from "../../assets/hero-commerce-v2.png";
 import { ProductCard } from "../../components/products/ProductCard";
 
@@ -37,28 +38,33 @@ const benefits = [
 const brands = ["DELL", "LENOVO", "HP", "ASUS", "ACER", "LG", "SAMSUNG"];
 
 export function HomePage() {
-  const productsQuery = useQuery({ queryKey: ["products", "home"], queryFn: getProducts });
-  const products = productsQuery.data?.filter((product) => product.is_featured).slice(0, 8);
+  const productsQuery = useQuery({
+    queryKey: ["products", "home"],
+    queryFn: () => getProducts({ featured: true, page_size: 8 }),
+  });
+  const products = productsQuery.data?.results;
+  const bannersQuery = useQuery({ queryKey: ["active-banners"], queryFn: getActiveBanners, staleTime: 60_000 });
+  const banner = bannersQuery.data?.[0];
 
   return (
     <main className="bg-white">
       <section className="site-container pt-5 sm:pt-7">
         <div className="relative min-h-[500px] overflow-hidden rounded-[22px] bg-[#edf5ff] lg:min-h-[540px]">
-          <img src={heroCommerce} alt="Laptops, computadoras y monitores" className="absolute inset-0 size-full object-cover object-center" />
+          <img src={banner?.image_url || heroCommerce} alt={banner?.title || "Laptops, computadoras y monitores"} className="absolute inset-0 size-full object-cover object-center" />
           <div className="absolute inset-0 bg-white/90 lg:bg-gradient-to-r lg:from-white lg:via-white/65 lg:to-transparent" />
           <div className="relative flex min-h-[500px] max-w-[670px] flex-col justify-center px-7 py-14 sm:px-12 lg:min-h-[540px] lg:px-16">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-[#ffeb72] px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-[#102c57]">
               <Sparkles size={15} /> Renueva tu tecnología
             </span>
             <h1 className="mt-6 text-balance text-5xl font-black leading-[0.98] tracking-[-0.05em] text-[#071d41] sm:text-6xl lg:text-[68px]">
-              Equipos que siguen tu ritmo.
+              {banner?.title || "Equipos que siguen tu ritmo."}
             </h1>
             <p className="mt-5 max-w-lg text-base font-medium leading-7 text-[#566579] sm:text-lg">
-              Laptops, computadoras y monitores seleccionados para trabajar, estudiar y hacer crecer tu negocio.
+              {banner?.subtitle || "Laptops, computadoras y monitores seleccionados para trabajar, estudiar y hacer crecer tu negocio."}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/products" className="inline-flex items-center gap-2 rounded-xl bg-[#1454d8] px-6 py-4 text-sm font-black text-white shadow-[0_10px_24px_rgba(20,84,216,0.25)] transition hover:-translate-y-0.5 hover:bg-[#0d45bd]">
-                Ver catálogo <ArrowRight size={18} />
+              <Link to={banner?.link || "/products"} className="inline-flex items-center gap-2 rounded-xl bg-[#1454d8] px-6 py-4 text-sm font-black text-white shadow-[0_10px_24px_rgba(20,84,216,0.25)] transition hover:-translate-y-0.5 hover:bg-[#0d45bd]">
+                {banner?.button_text || "Ver catálogo"} <ArrowRight size={18} />
               </Link>
               <a href="https://wa.me/51954107191?text=Hola%2C%20quisiera%20asesoría%20para%20elegir%20un%20equipo." target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl border-2 border-[#cbd7e6] bg-white/90 px-6 py-4 text-sm font-black text-[#16345f] transition hover:border-[#1454d8] hover:text-[#1454d8]">
                 Hablar con un asesor <ChevronRight size={18} />

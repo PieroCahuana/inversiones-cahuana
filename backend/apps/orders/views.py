@@ -1,12 +1,14 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, status
 from rest_framework.response import Response
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.views import APIView
 
 from .filters import OrderFilter
-from .models import Order
+from .models import Order, PaymentReceipt
 from .permissions import IsActiveUser, IsOrderAdmin
 from .services import OrderManagementService
 from .serializers import (
@@ -15,7 +17,12 @@ from .serializers import (
     OrderPaymentStatusUpdateSerializer,
     OrderSerializer,
     OrderStatusUpdateSerializer,
+    PaymentReceiptReviewSerializer,
+    PaymentReceiptSerializer,
+    PaymentReceiptUploadSerializer,
 )
+from apps.storefront.models import Notification
+from apps.storefront.services import notify_admins, notify_user
 
 
 class CheckoutView(APIView):
@@ -67,6 +74,7 @@ class OrderListView(APIView):
         queryset = (
             Order.objects
             .filter(user=request.user)
+            .select_related("user")
             .prefetch_related("items")
             .order_by("-created_at")
         )
@@ -344,3 +352,89 @@ class AdminOrderPaymentUpdateView(APIView):
                 ).data,
             }
         )
+
+
+class PaymentReceiptView(APIView):
+    permission_classes = [IsActiveUser]
+    parser_classes = [MultiPartParser, FormParser]
+    serializer_class = PaymentReceiptSerializer
+
+    def get_order(self, request, order_number: str):
+        try:
+            return Order.objects.select_related("user").get(order_number=order_number, user=request.user)
+        except Order.DoesNotExist:
+            return None
+
+    def get(self, request, order_number: str):
+        order = self.get_order(request, order_number)
+        if not order:
+            return Response({"detail": "El pedido no existe."}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            receipt = order.payment_receipt
+        except PaymentReceipt.DoesNotExist:
+            return Response({"detail": "Este pedido aún no tiene comprobante."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(PaymentReceiptSerializer(receipt, context={"request": request}).data)
+
+    def post(self, request, order_number: str):
+        order = self.get_order(request, order_number)
+        if not order:
+            return Response({"detail": "El pedido no existe."}, status=status.HTTP_404_NOT_FOUND)
+        if order.payment_method == Order.PaymentMethod.CASH_ON_DELIVERY:
+            return Response({"detail": "Los pedidos contra entrega no requieren comprobante."}, status=status.HTTP_400_BAD_REQUEST)
+        if order.payment_status == Order.PaymentStatus.PAID:
+            return Response({"detail": "El pago de este pedido ya fue aprobado."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = PaymentReceiptUploadSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        receipt, created = PaymentReceipt.objects.get_or_create(
+            order=order,
+            defaults={"file": serializer.validated_data["file"], "customer_note": serializer.validated_data["customer_note"]},
+        )
+        if not created:
+            receipt.file = serializer.validated_data["file"]
+            receipt.customer_note = serializer.validated_data["customer_note"]
+            receipt.status = PaymentReceipt.Status.PENDING
+            receipt.review_note = ""
+            receipt.reviewed_by = None
+            receipt.reviewed_at = None
+            receipt.save()
+        if order.payment_status == Order.PaymentStatus.FAILED:
+            order.payment_status = Order.PaymentStatus.PENDING
+            order.save(update_fields=["payment_status", "updated_at"])
+        notify_admins(
+            notification_type=Notification.Type.PAYMENT,
+            title="Comprobante por revisar",
+            message=f"El pedido {order.order_number} tiene un nuevo comprobante.",
+            link=f"/admin/orders/{order.order_number}",
+            email_subject=f"Comprobante recibido - {order.order_number}",
+        )
+        return Response({"message": "Comprobante enviado para revisión.", "receipt": PaymentReceiptSerializer(receipt, context={"request": request}).data}, status=status.HTTP_201_CREATED)
+
+
+class AdminPaymentReceiptReviewView(APIView):
+    permission_classes = [IsOrderAdmin]
+    serializer_class = PaymentReceiptReviewSerializer
+
+    def patch(self, request, order_number: str):
+        try:
+            receipt = PaymentReceipt.objects.select_related("order").get(order__order_number=order_number)
+        except PaymentReceipt.DoesNotExist:
+            return Response({"detail": "El pedido no tiene comprobante."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = PaymentReceiptReviewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        receipt.status = serializer.validated_data["status"]
+        receipt.review_note = serializer.validated_data["review_note"]
+        receipt.reviewed_by = request.user
+        receipt.reviewed_at = timezone.now()
+        receipt.save()
+        receipt.order.payment_status = Order.PaymentStatus.PAID if receipt.status == PaymentReceipt.Status.APPROVED else Order.PaymentStatus.FAILED
+        receipt.order.save(update_fields=["payment_status", "updated_at"])
+        notify_user(
+            user=receipt.order.user,
+            notification_type=Notification.Type.PAYMENT,
+            title="Comprobante revisado",
+            message=f"Tu comprobante del pedido {receipt.order.order_number} fue {receipt.get_status_display().lower()}.",
+            link=f"/orders/{receipt.order.order_number}",
+            email_subject=f"Comprobante revisado - {receipt.order.order_number}",
+        )
+        return Response({"message": "Comprobante revisado correctamente.", "receipt": PaymentReceiptSerializer(receipt, context={"request": request}).data})

@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
@@ -16,11 +18,7 @@ class CartProductSerializer(serializers.ModelSerializer):
         source="category.name",
         read_only=True,
     )
-    current_price = serializers.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        read_only=True,
-    )
+    current_price = serializers.SerializerMethodField()
     primary_image = serializers.SerializerMethodField()
 
     class Meta:
@@ -52,6 +50,10 @@ class CartProductSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(image.image.url)
 
         return image.image.url
+
+    def get_current_price(self, obj: Product) -> Decimal:
+        from apps.promotions.services import PromotionService
+        return PromotionService.get_price(obj)
 
 
 class CartItemSerializer(serializers.ModelSerializer):

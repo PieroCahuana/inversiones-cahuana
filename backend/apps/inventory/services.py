@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 
 from apps.products.models import Product
+from apps.storefront.models import Notification, StoreSettings
+from apps.storefront.services import notify_admins
 
 from .models import InventoryMovement
 
@@ -65,5 +67,14 @@ class InventoryService:
             reference=reference,
             created_by=user,
         )
+
+        threshold = StoreSettings.load().low_stock_threshold
+        if new_stock <= threshold:
+            notify_admins(
+                notification_type=Notification.Type.INVENTORY,
+                title="Stock bajo",
+                message=f"{product.name} tiene {new_stock} unidades disponibles.",
+                link="/admin/inventory",
+            )
 
         return movement

@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
-from .models import Order, OrderItem
+from .models import Order, OrderItem, PaymentReceipt
 from .services import OrderService
 
 
@@ -25,6 +25,38 @@ class OrderItemSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class PaymentReceiptSerializer(serializers.ModelSerializer):
+    file_url = serializers.SerializerMethodField()
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+
+    class Meta:
+        model = PaymentReceipt
+        fields = ("id", "file_url", "status", "status_display", "customer_note", "review_note", "reviewed_at", "created_at", "updated_at")
+        read_only_fields = fields
+
+    def get_file_url(self, obj) -> str:
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.file.url) if request else obj.file.url
+
+
+class PaymentReceiptUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
+    customer_note = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
+
+    def validate_file(self, file):
+        allowed = {"image/jpeg", "image/png", "image/webp", "application/pdf"}
+        if getattr(file, "content_type", "") not in allowed:
+            raise serializers.ValidationError("Solo se permiten archivos JPG, PNG, WebP o PDF.")
+        if file.size > 5 * 1024 * 1024:
+            raise serializers.ValidationError("El archivo no debe superar los 5 MB.")
+        return file
+
+
+class PaymentReceiptReviewSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=(PaymentReceipt.Status.APPROVED, PaymentReceipt.Status.REJECTED))
+    review_note = serializers.CharField(max_length=255, required=False, allow_blank=True, default="")
+
+
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(
         many=True,
@@ -43,6 +75,8 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only=True,
     )
     total_items = serializers.IntegerField(read_only=True)
+    payment_receipt = PaymentReceiptSerializer(read_only=True)
+    customer = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -55,8 +89,12 @@ class OrderSerializer(serializers.ModelSerializer):
             "payment_method_display",
             "payment_status",
             "payment_status_display",
+            "customer",
+            "payment_receipt",
             "subtotal",
             "shipping_cost",
+            "discount_amount",
+            "coupon_code",
             "total",
             "total_items",
             "recipient_name",
@@ -73,6 +111,9 @@ class OrderSerializer(serializers.ModelSerializer):
         )
         read_only_fields = fields
 
+    def get_customer(self, obj) -> dict:
+        return {"id": obj.user.id, "email": obj.user.email, "full_name": obj.user.get_full_name()}
+
 
 class OrderListSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(
@@ -84,6 +125,8 @@ class OrderListSerializer(serializers.ModelSerializer):
         read_only=True,
     )
     total_items = serializers.IntegerField(read_only=True)
+    customer = serializers.SerializerMethodField()
+    receipt_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -94,10 +137,21 @@ class OrderListSerializer(serializers.ModelSerializer):
             "status_display",
             "payment_status",
             "payment_status_display",
+            "customer",
+            "receipt_status",
             "total_items",
             "total",
             "created_at",
         )
+
+    def get_customer(self, obj) -> dict:
+        return {"id": obj.user.id, "email": obj.user.email, "full_name": obj.user.get_full_name()}
+
+    def get_receipt_status(self, obj) -> str | None:
+        try:
+            return obj.payment_receipt.status
+        except PaymentReceipt.DoesNotExist:
+            return None
 
 
 class CheckoutSerializer(serializers.Serializer):
@@ -129,6 +183,12 @@ class CheckoutSerializer(serializers.Serializer):
         default="",
     )
     notes = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default="",
+    )
+    coupon_code = serializers.CharField(
+        max_length=40,
         required=False,
         allow_blank=True,
         default="",

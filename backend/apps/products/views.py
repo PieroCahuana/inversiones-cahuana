@@ -48,6 +48,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     filterset_class = ProductFilter
 
     filter_backends = [
+        DjangoFilterBackend,
         filters.SearchFilter,
         filters.OrderingFilter,
     ]
