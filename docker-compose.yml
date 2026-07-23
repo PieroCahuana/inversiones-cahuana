@@ -37,7 +37,13 @@ services:
       - static_data:/app/staticfiles
     logging: *default-logging
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/', timeout=3)"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; request = urllib.request.Request('http://localhost:8000/api/health/', headers={'X-Forwarded-Proto': 'https'}); urllib.request.urlopen(request, timeout=3)",
+        ]
       interval: 15s
       timeout: 5s
       retries: 5
