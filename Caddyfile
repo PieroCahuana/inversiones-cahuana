@@ -5,7 +5,7 @@ www.{$APP_DOMAIN} {
 {$APP_DOMAIN} {
 	encode zstd gzip
 
-	@backend path /api/* /admin /admin/*
+	@backend path /api/*
 	reverse_proxy @backend backend:8000
 
 	reverse_proxy frontend:80
