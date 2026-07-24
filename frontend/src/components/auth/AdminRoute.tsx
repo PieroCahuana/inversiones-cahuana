@@ -8,7 +8,7 @@ export function AdminRoute() {
   const location = useLocation();
 
   if (isLoading) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#f4f7fb]"><LoaderCircle className="animate-spin text-[#1454d8]" size={38} /></div>;
+    return <div className="flex min-h-screen items-center justify-center bg-[#f4f7fb]"><LoaderCircle className="animate-spin text-[#249fd3]" size={38} /></div>;
   }
 
   if (!isAuthenticated) {

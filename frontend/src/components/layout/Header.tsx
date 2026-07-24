@@ -82,14 +82,14 @@ export function Header() {
             type="button"
             onClick={() => setCategoryOpen((current) => !current)}
             aria-expanded={categoryOpen}
-            className="flex h-12 items-center gap-2.5 rounded-xl bg-[#1454d8] px-5 text-sm font-black text-white shadow-[0_8px_20px_rgba(20,84,216,0.25)] transition hover:bg-[#0d45bd]"
+            className="flex h-12 items-center gap-2.5 rounded-xl bg-[#249fd3] px-5 text-sm font-black text-white shadow-[0_8px_20px_rgba(36,159,211,0.25)] transition hover:bg-[#167fac]"
           >
             <Menu size={20} /> Categorías <ChevronDown size={15} />
           </button>
           {categoryOpen && (
             <div className="absolute left-0 top-[58px] w-64 overflow-hidden rounded-2xl border border-[#dce4ef] bg-white p-2 shadow-[0_18px_50px_rgba(13,38,76,0.16)]">
               {categories.map((category) => (
-                <Link key={category.href} to={category.href} onClick={() => setCategoryOpen(false)} className="block rounded-xl px-4 py-3 text-sm font-bold text-[#26354a] hover:bg-[#eef4ff] hover:text-[#1454d8]">
+                <Link key={category.href} to={category.href} onClick={() => setCategoryOpen(false)} className="block rounded-xl px-4 py-3 text-sm font-bold text-[#26354a] hover:bg-[#eef4ff] hover:text-[#249fd3]">
                   {category.label}
                 </Link>
               ))}
@@ -99,41 +99,41 @@ export function Header() {
 
         <Link to="/" className="shrink-0" onClick={() => setMenuOpen(false)}><BrandLogo /></Link>
 
-        <form onSubmit={handleSearch} className="ml-auto hidden h-12 w-full max-w-2xl items-center overflow-hidden rounded-xl border-2 border-[#dce4ef] bg-white transition focus-within:border-[#1454d8] md:flex">
+        <form onSubmit={handleSearch} className="ml-auto hidden h-12 w-full max-w-2xl items-center overflow-hidden rounded-xl border-2 border-[#dce4ef] bg-white transition focus-within:border-[#249fd3] md:flex">
           <Search size={20} className="ml-4 shrink-0 text-[#8592a3]" />
           <input value={search} onChange={(event) => setSearch(event.target.value)} type="search" aria-label="Buscar productos" placeholder="Buscar productos, marcas y más..." className="h-full w-full px-3 text-sm font-medium outline-none placeholder:text-[#8a96a6]" />
-          <button className="h-full bg-[#1454d8] px-6 text-sm font-black text-white hover:bg-[#0d45bd]">Buscar</button>
+          <button className="h-full bg-[#249fd3] px-6 text-sm font-black text-white hover:bg-[#167fac]">Buscar</button>
         </form>
 
         <div className="flex items-center gap-1 sm:gap-2">
           {isAuthenticated && <NotificationBell />}
           <div className="relative">
             {isAuthenticated ? (
-              <button type="button" onClick={() => setAccountOpen((current) => !current)} aria-expanded={accountOpen} aria-label="Menú de mi cuenta" className="flex size-11 items-center justify-center rounded-full bg-[#edf3ff] font-black text-[#1454d8] transition hover:bg-[#dfeaff]">
+              <button type="button" onClick={() => setAccountOpen((current) => !current)} aria-expanded={accountOpen} aria-label="Menú de mi cuenta" className="flex size-12 items-center justify-center rounded-xl bg-[#eaf7fc] font-black text-[#249fd3] transition hover:bg-[#d8f0fa]">
                 {user?.first_name ? user.first_name[0].toUpperCase() : <UserRound size={21} />}
               </button>
-            ) : <Link to="/login" aria-label="Iniciar sesión" className="flex size-11 items-center justify-center rounded-full bg-[#f3f6fa] text-[#26354a] transition hover:bg-[#e6efff] hover:text-[#1454d8]"><UserRound size={21} /></Link>}
+            ) : <Link to="/login" aria-label="Iniciar sesión" className="flex size-12 items-center justify-center rounded-xl bg-[#f3f6fa] text-[#26354a] transition hover:bg-[#e0f4fb] hover:text-[#249fd3]"><UserRound size={21} /></Link>}
             {accountOpen && isAuthenticated && (
               <div className="absolute right-0 top-[54px] w-64 overflow-hidden rounded-2xl border border-[#dce4ef] bg-white p-2 shadow-[0_18px_50px_rgba(13,38,76,0.16)]">
                 <div className="border-b border-[#e8edf3] px-3 py-3"><p className="truncate text-sm font-black text-[#183353]">{user?.full_name || "Mi cuenta"}</p><p className="mt-1 truncate text-xs text-[#7b8999]">{user?.email}</p></div>
-                <Link to="/profile" onClick={() => setAccountOpen(false)} className="mt-1 flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-[#334862] hover:bg-[#edf3ff] hover:text-[#1454d8]"><UserRound size={17} /> Mi perfil</Link>
-                <Link to="/orders" onClick={() => setAccountOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-[#334862] hover:bg-[#edf3ff] hover:text-[#1454d8]"><ShoppingCart size={17} /> Mis pedidos</Link>
-                {user?.role === "admin" && <Link to="/admin" onClick={() => setAccountOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-[#1454d8] hover:bg-[#edf3ff]"><LayoutDashboard size={17} /> Panel administrativo</Link>}
+                <Link to="/profile" onClick={() => setAccountOpen(false)} className="mt-1 flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-[#334862] hover:bg-[#eaf7fc] hover:text-[#249fd3]"><UserRound size={17} /> Mi perfil</Link>
+                <Link to="/orders" onClick={() => setAccountOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-[#334862] hover:bg-[#eaf7fc] hover:text-[#249fd3]"><ShoppingCart size={17} /> Mis pedidos</Link>
+                {user?.role === "admin" && <Link to="/admin" onClick={() => setAccountOpen(false)} className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-[#249fd3] hover:bg-[#eaf7fc]"><LayoutDashboard size={17} /> Panel administrativo</Link>}
                 <button type="button" onClick={handleLogout} className="flex w-full items-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-[#bd4937] hover:bg-red-50"><LogOut size={17} /> Cerrar sesión</button>
               </div>
             )}
           </div>
-          <Link to="/cart" aria-label={`Carrito, ${cartCount} productos`} className="relative flex size-11 items-center justify-center rounded-full bg-[#f3f6fa] text-[#26354a] transition hover:bg-[#e6efff] hover:text-[#1454d8]">
+          <Link to="/cart" aria-label={`Carrito, ${cartCount} productos`} className="relative flex size-12 items-center justify-center rounded-xl bg-[#f3f6fa] text-[#26354a] transition hover:bg-[#e0f4fb] hover:text-[#249fd3]">
             <ShoppingCart size={22} />
             {cartCount > 0 && <span className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full bg-[#ff5a36] px-1.5 py-1 text-[9px] font-black leading-none text-white">{cartCount > 99 ? "99+" : cartCount}</span>}
           </Link>
-          <button type="button" aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"} onClick={() => setMenuOpen((current) => !current)} className="flex size-11 items-center justify-center rounded-full text-[#26354a] lg:hidden">
+          <button type="button" aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"} onClick={() => setMenuOpen((current) => !current)} className="flex size-12 items-center justify-center rounded-xl text-[#26354a] lg:hidden">
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
-      <nav className="hidden bg-[#1454d8] text-white lg:block">
+      <nav className="hidden bg-[#249fd3] text-white lg:block">
         <div className="site-container flex h-12 items-center gap-1">
           {secondaryLinks.map((link) => (
             <Link key={link.label} to={link.href} className="flex h-full items-center px-5 text-sm font-bold text-white/90 transition hover:bg-white/10 hover:text-white">{link.label}</Link>
@@ -150,10 +150,10 @@ export function Header() {
               <input value={search} onChange={(event) => setSearch(event.target.value)} type="search" placeholder="Buscar productos..." className="h-full w-full px-3 text-sm outline-none" />
             </form>
             <div className="mt-3 grid gap-1">
-              {secondaryLinks.map((link) => <Link key={link.label} to={link.href} onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 font-bold text-[#26354a] hover:bg-[#eef4ff] hover:text-[#1454d8]">{link.label}</Link>)}
-              <Link to="/products" onClick={() => setMenuOpen(false)} className="mt-2 rounded-xl bg-[#1454d8] px-4 py-3.5 text-center font-black text-white">Ver catálogo completo</Link>
+              {secondaryLinks.map((link) => <Link key={link.label} to={link.href} onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 font-bold text-[#26354a] hover:bg-[#eef4ff] hover:text-[#249fd3]">{link.label}</Link>)}
+              <Link to="/products" onClick={() => setMenuOpen(false)} className="mt-2 rounded-xl bg-[#249fd3] px-4 py-3.5 text-center font-black text-white">Ver catálogo completo</Link>
               {isAuthenticated ? (
-                <><Link to="/profile" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 font-bold text-[#26354a] hover:bg-[#eef4ff]">Mi perfil</Link><Link to="/orders" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 font-bold text-[#26354a] hover:bg-[#eef4ff]">Mis pedidos</Link>{user?.role === "admin" && <Link to="/admin" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 font-bold text-[#1454d8] hover:bg-[#eef4ff]">Panel administrativo</Link>}<button type="button" onClick={handleLogout} className="rounded-xl px-4 py-3 text-left font-bold text-[#bd4937] hover:bg-red-50">Cerrar sesión</button></>
+                <><Link to="/profile" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 font-bold text-[#26354a] hover:bg-[#eef4ff]">Mi perfil</Link><Link to="/orders" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 font-bold text-[#26354a] hover:bg-[#eef4ff]">Mis pedidos</Link>{user?.role === "admin" && <Link to="/admin" onClick={() => setMenuOpen(false)} className="rounded-xl px-4 py-3 font-bold text-[#249fd3] hover:bg-[#eef4ff]">Panel administrativo</Link>}<button type="button" onClick={handleLogout} className="rounded-xl px-4 py-3 text-left font-bold text-[#bd4937] hover:bg-red-50">Cerrar sesión</button></>
               ) : <div className="mt-2 grid grid-cols-2 gap-2"><Link to="/login" onClick={() => setMenuOpen(false)} className="rounded-xl border border-[#d8e1ec] px-4 py-3 text-center text-sm font-black text-[#334862]">Ingresar</Link><Link to="/register" onClick={() => setMenuOpen(false)} className="rounded-xl bg-[#071d41] px-4 py-3 text-center text-sm font-black text-white">Registrarse</Link></div>}
             </div>
           </div>

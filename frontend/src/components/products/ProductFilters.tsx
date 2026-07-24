@@ -13,14 +13,14 @@ interface ProductFiltersProps {
   onClear: () => void;
 }
 
-const fieldClass = "mt-2 h-11 w-full rounded-xl border border-[#d8e1ec] bg-white px-3 text-sm text-[#334862] outline-none focus:border-[#1454d8] focus:ring-4 focus:ring-[#1454d8]/10";
+const fieldClass = "mt-2 h-11 w-full rounded-xl border border-[#d8e1ec] bg-white px-3 text-sm text-[#334862] outline-none focus:border-[#249fd3] focus:ring-4 focus:ring-[#249fd3]/10";
 
 export function ProductFilters({ filters, brands, categories, activeCount, onChange, onClear }: ProductFiltersProps) {
   return (
     <aside className="rounded-[20px] border border-[#e1e7ef] bg-white p-5">
       <div className="flex items-center justify-between border-b border-[#e8edf3] pb-4">
-        <div className="flex items-center gap-2 font-black text-[#183353]"><SlidersHorizontal size={19} className="text-[#1454d8]" /> Filtros {activeCount > 0 && <span className="flex size-6 items-center justify-center rounded-full bg-[#1454d8] text-[10px] text-white">{activeCount}</span>}</div>
-        {activeCount > 0 && <button type="button" onClick={onClear} className="flex items-center gap-1 text-xs font-bold text-[#1454d8] hover:underline"><RotateCcw size={13} /> Limpiar</button>}
+        <div className="flex items-center gap-2 font-black text-[#183353]"><SlidersHorizontal size={19} className="text-[#249fd3]" /> Filtros {activeCount > 0 && <span className="flex size-6 items-center justify-center rounded-full bg-[#249fd3] text-[10px] text-white">{activeCount}</span>}</div>
+        {activeCount > 0 && <button type="button" onClick={onClear} className="flex items-center gap-1 text-xs font-bold text-[#249fd3] hover:underline"><RotateCcw size={13} /> Limpiar</button>}
       </div>
 
       <div className="mt-5 space-y-5">
@@ -50,7 +50,7 @@ export function ProductFilters({ filters, brands, categories, activeCount, onCha
               ["used", "Seminuevo"],
             ].map(([value, label]) => (
               <label key={value} className="flex cursor-pointer items-center gap-3 text-sm text-[#5e6f83]">
-                <input type="radio" name="condition" value={value} checked={(filters.condition ?? "") === value} onChange={() => onChange("condition", value)} className="size-4 accent-[#1454d8]" />
+                <input type="radio" name="condition" value={value} checked={(filters.condition ?? "") === value} onChange={() => onChange("condition", value)} className="size-4 accent-[#249fd3]" />
                 {label}
               </label>
             ))}
@@ -71,7 +71,7 @@ export function ProductFilters({ filters, brands, categories, activeCount, onCha
 
         <label className="flex cursor-pointer items-center justify-between rounded-xl bg-[#f3f7fd] px-4 py-3.5 text-sm font-black text-[#334862]">
           Solo disponibles
-          <input type="checkbox" checked={filters.in_stock === true} onChange={(event) => onChange("in_stock", event.target.checked)} className="size-4 accent-[#1454d8]" />
+          <input type="checkbox" checked={filters.in_stock === true} onChange={(event) => onChange("in_stock", event.target.checked)} className="size-4 accent-[#249fd3]" />
         </label>
       </div>
     </aside>

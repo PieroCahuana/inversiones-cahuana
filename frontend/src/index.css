@@ -20,9 +20,12 @@
   --muted: #6c798a;
   --canvas: #ffffff;
   --paper: #ffffff;
-  --violet: #1454d8;
-  --violet-dark: #0d45bd;
-  --violet-soft: #edf3ff;
+  --brand: #249fd3;
+  --brand-dark: #167fac;
+  --brand-soft: #eaf7fc;
+  --violet: var(--brand);
+  --violet-dark: var(--brand-dark);
+  --violet-soft: var(--brand-soft);
   --line: #e1e7ef;
 }
 
@@ -66,6 +69,15 @@ button:disabled {
 img {
   display: block;
   max-width: 100%;
+}
+
+.brand-logo-mark {
+  filter:
+    sepia(1)
+    saturate(6)
+    hue-rotate(145deg)
+    brightness(0.94)
+    contrast(1.08);
 }
 
 a {
@@ -192,7 +204,7 @@ a {
   }
 
   .eyebrow {
-    color: #1454d8;
+    color: #249fd3;
     font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0.22em;

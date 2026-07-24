@@ -41,7 +41,7 @@ export function LoginPage() {
     <main className="site-container py-12 sm:py-20">
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-[24px] border border-[#e1e7ef] bg-white shadow-[0_30px_90px_rgba(13,38,76,0.12)] lg:grid-cols-[0.9fr_1.1fr]">
         <aside className="relative overflow-hidden bg-[#071d41] p-9 text-white sm:p-12">
-          <div className="absolute -left-20 -top-20 size-72 rounded-full bg-[#1454d8]/55 blur-[90px]" />
+          <div className="absolute -left-20 -top-20 size-72 rounded-full bg-[#249fd3]/55 blur-[90px]" />
           <div className="relative flex h-full min-h-[360px] flex-col">
             <div className="flex size-12 items-center justify-center rounded-2xl bg-white/10 text-[#8fb5ff]"><LockKeyhole size={22} /></div>
             <p className="mt-10 text-xs font-black uppercase tracking-[0.22em] text-[#8fb5ff]">Área de clientes</p>
@@ -59,24 +59,24 @@ export function LoginPage() {
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <label className="block">
               <span className="text-sm font-bold text-[#334862]">Correo electrónico</span>
-              <input name="email" required type="email" autoComplete="email" className="mt-2 w-full rounded-xl border border-[#dce4ef] bg-[#f8fafc] px-4 py-3.5 outline-none transition focus:border-[#1454d8] focus:ring-4 focus:ring-[#1454d8]/10" placeholder="correo@ejemplo.com" />
+              <input name="email" required type="email" autoComplete="email" className="mt-2 w-full rounded-xl border border-[#dce4ef] bg-[#f8fafc] px-4 py-3.5 outline-none transition focus:border-[#249fd3] focus:ring-4 focus:ring-[#249fd3]/10" placeholder="correo@ejemplo.com" />
             </label>
             <label className="block">
               <span className="text-sm font-bold text-[#334862]">Contraseña</span>
-              <span className="mt-2 flex items-center rounded-xl border border-[#dce4ef] bg-[#f8fafc] pr-3 transition focus-within:border-[#1454d8] focus-within:ring-4 focus-within:ring-[#1454d8]/10">
+              <span className="mt-2 flex items-center rounded-xl border border-[#dce4ef] bg-[#f8fafc] pr-3 transition focus-within:border-[#249fd3] focus-within:ring-4 focus-within:ring-[#249fd3]/10">
                 <input name="password" required autoComplete="current-password" type={showPassword ? "text" : "password"} className="w-full bg-transparent px-4 py-3.5 outline-none" placeholder="Tu contraseña" />
-                <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"} className="rounded-full p-2 text-[#6c798a] hover:bg-[#edf3ff]">
+                <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"} className="rounded-full p-2 text-[#6c798a] hover:bg-[#eaf7fc]">
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </span>
             </label>
             {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">{error}</p>}
-            <div className="-mt-2 text-right"><Link to="/forgot-password" className="text-xs font-black text-[#1454d8] hover:underline">Olvidé mi contraseña</Link></div>
-            <button disabled={isSubmitting} className="w-full rounded-xl bg-[#1454d8] px-5 py-4 text-sm font-black text-white transition hover:bg-[#0d45bd] disabled:opacity-60">
+            <div className="-mt-2 text-right"><Link to="/forgot-password" className="text-xs font-black text-[#249fd3] hover:underline">Olvidé mi contraseña</Link></div>
+            <button disabled={isSubmitting} className="w-full rounded-xl bg-[#249fd3] px-5 py-4 text-sm font-black text-white transition hover:bg-[#167fac] disabled:opacity-60">
               {isSubmitting ? "Ingresando..." : "Ingresar a mi cuenta"}
             </button>
           </form>
-          <p className="mt-6 text-center text-sm text-[#6c798a]">¿Todavía no tienes una cuenta? <Link to="/register" state={location.state} className="font-black text-[#1454d8] hover:underline">Regístrate</Link></p>
+          <p className="mt-6 text-center text-sm text-[#6c798a]">¿Todavía no tienes una cuenta? <Link to="/register" state={location.state} className="font-black text-[#249fd3] hover:underline">Regístrate</Link></p>
         </section>
       </div>
     </main>

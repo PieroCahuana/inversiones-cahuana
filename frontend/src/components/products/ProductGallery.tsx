@@ -39,7 +39,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     <div>
       <div className="group relative aspect-square overflow-hidden rounded-[24px] border border-[#e1e7ef] bg-[#f3f6fa]">
         <img src={getImageSource(activeImage)} alt={activeImage.alt_text || productName} className="size-full object-contain p-7 sm:p-10" />
-        <button type="button" onClick={() => setLightboxOpen(true)} aria-label="Ampliar imagen" className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-full border border-[#dce4ef] bg-white/95 text-[#334862] shadow-sm transition hover:bg-[#1454d8] hover:text-white"><ZoomIn size={19} /></button>
+        <button type="button" onClick={() => setLightboxOpen(true)} aria-label="Ampliar imagen" className="absolute right-4 top-4 flex size-11 items-center justify-center rounded-full border border-[#dce4ef] bg-white/95 text-[#334862] shadow-sm transition hover:bg-[#249fd3] hover:text-white"><ZoomIn size={19} /></button>
         {images.length > 1 && (
           <>
             <button type="button" onClick={() => move(-1)} aria-label="Imagen anterior" className="absolute left-4 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-[#334862] shadow-md opacity-0 transition group-hover:opacity-100"><ChevronLeft size={20} /></button>
@@ -51,7 +51,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
       {images.length > 1 && (
         <div className="mt-4 grid grid-cols-5 gap-3">
           {images.slice(0, 5).map((image, index) => (
-            <button key={image.id} type="button" onClick={() => setActiveIndex(index)} className={`aspect-square overflow-hidden rounded-xl border-2 bg-[#f5f7fa] transition ${activeIndex === index ? "border-[#1454d8]" : "border-transparent hover:border-[#b9cae4]"}`}>
+            <button key={image.id} type="button" onClick={() => setActiveIndex(index)} className={`aspect-square overflow-hidden rounded-xl border-2 bg-[#f5f7fa] transition ${activeIndex === index ? "border-[#249fd3]" : "border-transparent hover:border-[#b9cae4]"}`}>
               <img src={getImageSource(image)} alt={image.alt_text || `${productName}, imagen ${index + 1}`} className="size-full object-contain p-2" />
             </button>
           ))}

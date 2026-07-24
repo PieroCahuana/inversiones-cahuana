@@ -115,10 +115,10 @@ export function ProductDetailPage() {
     const isNotFound = axios.isAxiosError(productQuery.error) && productQuery.error.response?.status === 404;
     return (
       <main className="site-container py-20 text-center">
-        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-[#edf3ff] text-[#1454d8]"><PackageCheck size={34} /></div>
+        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-[#eaf7fc] text-[#249fd3]"><PackageCheck size={34} /></div>
         <h1 className="mt-6 text-3xl font-black text-[#102a4e]">{isNotFound ? "Este producto ya no está disponible" : "No pudimos cargar el producto"}</h1>
         <p className="mx-auto mt-3 max-w-lg text-[#6c798a]">{isNotFound ? "Puede haber cambiado de dirección o haber sido retirado del catálogo." : "Comprueba tu conexión e inténtalo nuevamente."}</p>
-        <div className="mt-7 flex justify-center gap-3"><Link to="/products" className="rounded-xl bg-[#1454d8] px-5 py-3 text-sm font-black text-white">Volver al catálogo</Link>{!isNotFound && <button type="button" onClick={() => productQuery.refetch()} className="rounded-xl border border-[#d8e1ec] px-5 py-3 text-sm font-black text-[#334862]">Reintentar</button>}</div>
+        <div className="mt-7 flex justify-center gap-3"><Link to="/products" className="rounded-xl bg-[#249fd3] px-5 py-3 text-sm font-black text-white">Volver al catálogo</Link>{!isNotFound && <button type="button" onClick={() => productQuery.refetch()} className="rounded-xl border border-[#d8e1ec] px-5 py-3 text-sm font-black text-[#334862]">Reintentar</button>}</div>
       </main>
     );
   }
@@ -133,9 +133,9 @@ export function ProductDetailPage() {
     <main className="bg-white">
       <div className="site-container py-5">
         <nav aria-label="Ruta de navegación" className="flex flex-wrap items-center gap-1.5 text-xs font-semibold text-[#7b8999]">
-          <Link to="/" className="hover:text-[#1454d8]">Inicio</Link><ChevronRight size={13} />
-          <Link to="/products" className="hover:text-[#1454d8]">Productos</Link><ChevronRight size={13} />
-          <Link to={`/products?category=${product.category.slug}`} className="hover:text-[#1454d8]">{product.category.name}</Link><ChevronRight size={13} />
+          <Link to="/" className="hover:text-[#249fd3]">Inicio</Link><ChevronRight size={13} />
+          <Link to="/products" className="hover:text-[#249fd3]">Productos</Link><ChevronRight size={13} />
+          <Link to={`/products?category=${product.category.slug}`} className="hover:text-[#249fd3]">{product.category.name}</Link><ChevronRight size={13} />
           <span className="max-w-[260px] truncate text-[#334862]">{product.name}</span>
         </nav>
       </div>
@@ -145,7 +145,7 @@ export function ProductDetailPage() {
 
         <div className="lg:py-2">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-[#edf3ff] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] text-[#1454d8]">{product.brand.name}</span>
+            <span className="rounded-full bg-[#eaf7fc] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] text-[#249fd3]">{product.brand.name}</span>
             <span className="rounded-full bg-[#f0f3f7] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-[#52647a]">{conditionLabels[product.condition]}</span>
             {product.has_discount && <span className="rounded-full bg-[#ff5a36] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-white">-{discountPercentage}%</span>}
           </div>
@@ -173,7 +173,7 @@ export function ProductDetailPage() {
               <span className="w-10 text-center text-sm font-black text-[#102a4e]">{quantity}</span>
               <button type="button" onClick={() => setQuantity((current) => Math.min(product.stock, current + 1))} disabled={quantity >= product.stock} aria-label="Aumentar cantidad" className="flex h-full w-12 items-center justify-center text-[#52647a] disabled:opacity-30"><Plus size={17} /></button>
             </div>
-            <button type="button" disabled={!product.is_in_stock || cartMutation.isPending} onClick={addProductToCart} className="flex h-13 flex-1 items-center justify-center gap-2 rounded-xl bg-[#1454d8] px-6 text-sm font-black text-white shadow-[0_10px_25px_rgba(20,84,216,0.22)] transition hover:bg-[#0d45bd] disabled:cursor-not-allowed disabled:bg-[#aeb9c8]">
+            <button type="button" disabled={!product.is_in_stock || cartMutation.isPending} onClick={addProductToCart} className="flex h-13 flex-1 items-center justify-center gap-2 rounded-xl bg-[#249fd3] px-6 text-sm font-black text-white shadow-[0_10px_25px_rgba(36,159,211,0.22)] transition hover:bg-[#167fac] disabled:cursor-not-allowed disabled:bg-[#aeb9c8]">
               <ShoppingCart size={19} /> {cartMutation.isPending ? "Agregando..." : "Agregar al carrito"}
             </button>
           </div>
@@ -184,7 +184,7 @@ export function ProductDetailPage() {
           </a>
 
           <div className="mt-7 grid gap-3 sm:grid-cols-3">
-            {[{ icon: ShieldCheck, text: "Equipo revisado" }, { icon: Truck, text: "Entrega coordinada" }, { icon: BadgeCheck, text: "Asesoría incluida" }].map(({ icon: Icon, text }) => <div key={text} className="flex items-center gap-2 rounded-xl bg-[#f5f8fc] px-3 py-3 text-xs font-bold text-[#52647a]"><Icon size={17} className="shrink-0 text-[#1454d8]" />{text}</div>)}
+            {[{ icon: ShieldCheck, text: "Equipo revisado" }, { icon: Truck, text: "Entrega coordinada" }, { icon: BadgeCheck, text: "Asesoría incluida" }].map(({ icon: Icon, text }) => <div key={text} className="flex items-center gap-2 rounded-xl bg-[#f5f8fc] px-3 py-3 text-xs font-bold text-[#52647a]"><Icon size={17} className="shrink-0 text-[#249fd3]" />{text}</div>)}
           </div>
         </div>
       </section>
@@ -192,13 +192,13 @@ export function ProductDetailPage() {
       <section className="border-y border-[#e1e7ef] bg-[#f7f9fc] py-14 sm:py-16">
         <div className="site-container grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <article>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#1454d8]">Descripción</p>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#249fd3]">Descripción</p>
             <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#102a4e]">Conoce mejor este equipo</h2>
             <p className="mt-5 whitespace-pre-line leading-8 text-[#637286]">{product.description}</p>
           </article>
 
           <article>
-            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#1454d8]">Ficha técnica</p>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-[#249fd3]">Ficha técnica</p>
             <h2 className="mt-3 text-3xl font-black tracking-[-0.035em] text-[#102a4e]">Especificaciones</h2>
             {specifications.length > 0 ? (
               <dl className="mt-6 overflow-hidden rounded-[18px] border border-[#dfe7f0] bg-white">
@@ -211,7 +211,7 @@ export function ProductDetailPage() {
 
       {(relatedQuery.isPending || relatedProducts.length > 0) && (
         <section className="site-container py-16 lg:py-20">
-          <div className="flex items-end justify-between gap-5"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-[#1454d8]">También podría interesarte</p><h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#071d41] sm:text-4xl">Productos relacionados</h2></div><Link to={`/products?category=${product.category.slug}`} className="hidden items-center gap-2 text-sm font-black text-[#1454d8] hover:underline sm:flex">Ver categoría <ChevronRight size={17} /></Link></div>
+          <div className="flex items-end justify-between gap-5"><div><p className="text-xs font-black uppercase tracking-[0.2em] text-[#249fd3]">También podría interesarte</p><h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[#071d41] sm:text-4xl">Productos relacionados</h2></div><Link to={`/products?category=${product.category.slug}`} className="hidden items-center gap-2 text-sm font-black text-[#249fd3] hover:underline sm:flex">Ver categoría <ChevronRight size={17} /></Link></div>
           {relatedQuery.isPending ? <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[460px] animate-pulse rounded-[20px] bg-[#eaf0f6]" />)}</div> : <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{relatedProducts.map((item) => <ProductCard key={item.id} product={item} />)}</div>}
         </section>
       )}

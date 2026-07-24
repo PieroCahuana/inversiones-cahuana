@@ -31,13 +31,13 @@ export function ProductsPage() {
     <main className="bg-[#f7f9fc]">
       <section className="border-b border-[#dfe7f0] bg-white py-10 sm:py-12">
         <div className="site-container">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#1454d8]">Catálogo de productos</p>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-[#249fd3]">Catálogo de productos</p>
           <div className="mt-3 flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
             <div>
               <h1 className="text-4xl font-black tracking-[-0.045em] text-[#071d41] sm:text-5xl">Encuentra tu próximo equipo</h1>
               <p className="mt-3 max-w-2xl leading-7 text-[#6c798a]">Compara opciones, filtra por tus preferencias y elige con la asesoría de especialistas.</p>
             </div>
-            {productsQuery.data && <p className="text-sm font-bold text-[#6c798a]"><strong className="text-[#1454d8]">{productsQuery.data.count}</strong> productos encontrados</p>}
+            {productsQuery.data && <p className="text-sm font-bold text-[#6c798a]"><strong className="text-[#249fd3]">{productsQuery.data.count}</strong> productos encontrados</p>}
           </div>
         </div>
       </section>
@@ -47,7 +47,7 @@ export function ProductsPage() {
           <ProductSearch value={filters.search} onChange={(value) => setFilter("search", value)} />
           <div className="flex items-center justify-between gap-3">
             <button type="button" onClick={() => setMobileFiltersOpen(true)} className="flex h-11 items-center gap-2 rounded-xl border border-[#d8e1ec] bg-white px-4 text-sm font-black text-[#334862] lg:hidden">
-              <SlidersHorizontal size={17} /> Filtros {activeFilterCount > 0 && <span className="rounded-full bg-[#1454d8] px-2 py-0.5 text-[10px] text-white">{activeFilterCount}</span>}
+              <SlidersHorizontal size={17} /> Filtros {activeFilterCount > 0 && <span className="rounded-full bg-[#249fd3] px-2 py-0.5 text-[10px] text-white">{activeFilterCount}</span>}
             </button>
             <ProductSort value={filters.ordering} onChange={(value) => setFilter("ordering", value)} />
           </div>
@@ -79,7 +79,7 @@ export function ProductsPage() {
               <button type="button" onClick={() => setMobileFiltersOpen(false)} aria-label="Cerrar filtros" className="flex size-10 items-center justify-center rounded-full bg-white text-[#334862]"><X size={20} /></button>
             </div>
             <ProductFilters filters={filters} brands={brandsQuery.data ?? []} categories={categoriesQuery.data ?? []} activeCount={activeFilterCount} onChange={setFilter} onClear={clearFilters} />
-            <button type="button" onClick={() => setMobileFiltersOpen(false)} className="sticky bottom-3 mt-4 w-full rounded-xl bg-[#1454d8] px-5 py-3.5 text-sm font-black text-white shadow-lg">Ver {productsQuery.data?.count ?? 0} productos</button>
+            <button type="button" onClick={() => setMobileFiltersOpen(false)} className="sticky bottom-3 mt-4 w-full rounded-xl bg-[#249fd3] px-5 py-3.5 text-sm font-black text-white shadow-lg">Ver {productsQuery.data?.count ?? 0} productos</button>
           </div>
         </div>
       )}

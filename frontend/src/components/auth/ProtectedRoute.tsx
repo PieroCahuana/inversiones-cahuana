@@ -8,7 +8,7 @@ export function ProtectedRoute() {
   const location = useLocation();
 
   if (isLoading) {
-    return <div className="flex min-h-[60vh] items-center justify-center"><LoaderCircle size={34} className="animate-spin text-[#1454d8]" /></div>;
+    return <div className="flex min-h-[60vh] items-center justify-center"><LoaderCircle size={34} className="animate-spin text-[#249fd3]" /></div>;
   }
 
   if (!isAuthenticated) {

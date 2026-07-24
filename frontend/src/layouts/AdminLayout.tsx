@@ -37,7 +37,7 @@ export function AdminLayout() {
       <div className="px-5 pb-3 pt-6"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#7fa8e8]">Administración</p></div>
       <nav className="grid gap-1 px-3">
         {links.map(({ to, label, icon: Icon, end }) => (
-          <NavLink key={to} to={to} end={end} onClick={() => setOpen(false)} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition ${isActive ? "bg-[#1454d8] text-white shadow-[0_10px_24px_rgba(20,84,216,0.28)]" : "text-white/68 hover:bg-white/8 hover:text-white"}`}>
+          <NavLink key={to} to={to} end={end} onClick={() => setOpen(false)} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold transition ${isActive ? "bg-[#249fd3] text-white shadow-[0_10px_24px_rgba(36,159,211,0.28)]" : "text-white/68 hover:bg-white/8 hover:text-white"}`}>
             <Icon size={19} /> {label}
           </NavLink>
         ))}
@@ -58,7 +58,7 @@ export function AdminLayout() {
         <header className="sticky top-0 z-30 flex h-20 items-center border-b border-[#dfe6ef] bg-white/90 px-4 backdrop-blur-xl sm:px-7">
           <button type="button" onClick={() => setOpen(true)} className="mr-3 rounded-xl border border-[#dce4ef] p-2.5 lg:hidden"><Menu size={22} /></button>
           <div><p className="text-xs font-bold text-[#728096]">Panel de control</p><p className="mt-0.5 text-sm font-black text-[#153454]">Inversiones Cahuana</p></div>
-          <div className="ml-auto flex items-center gap-3"><div className="hidden text-right sm:block"><p className="text-sm font-black">{user?.full_name || "Administrador"}</p><p className="text-xs text-[#728096]">{user?.email}</p></div><div className="flex size-10 items-center justify-center rounded-xl bg-[#e8f0ff] text-sm font-black text-[#1454d8]">{user?.first_name?.[0]?.toUpperCase() || "A"}</div></div>
+          <div className="ml-auto flex items-center gap-3"><div className="hidden text-right sm:block"><p className="text-sm font-black">{user?.full_name || "Administrador"}</p><p className="text-xs text-[#728096]">{user?.email}</p></div><div className="flex size-10 items-center justify-center rounded-xl bg-[#e8f0ff] text-sm font-black text-[#249fd3]">{user?.first_name?.[0]?.toUpperCase() || "A"}</div></div>
         </header>
         <main className="mx-auto w-full max-w-[1540px] p-4 sm:p-7 lg:p-9"><Outlet /></main>
       </div>

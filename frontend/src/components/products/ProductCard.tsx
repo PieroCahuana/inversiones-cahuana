@@ -103,7 +103,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <button
           type="button"
           aria-label="Agregar a favoritos"
-          className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full border border-[#e1e7ef] bg-white/90 text-[#6c798a] shadow-sm backdrop-blur transition hover:bg-[#1454d8] hover:text-white"
+          className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full border border-[#e1e7ef] bg-white/90 text-[#6c798a] shadow-sm backdrop-blur transition hover:bg-[#249fd3] hover:text-white"
         >
           <Heart size={17} />
         </button>
@@ -111,7 +111,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1454d8]">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#249fd3]">
             {product.brand}
           </p>
 
@@ -133,13 +133,13 @@ export function ProductCard({ product }: ProductCardProps) {
           to={`/products/${product.slug}`}
           className="mt-3 flex items-start justify-between gap-3"
         >
-          <h3 className="line-clamp-2 text-lg font-black leading-6 tracking-tight text-[#102a4e] transition group-hover:text-[#1454d8]">
+          <h3 className="line-clamp-2 text-lg font-black leading-6 tracking-tight text-[#102a4e] transition group-hover:text-[#249fd3]">
             {product.name}
           </h3>
 
           <ArrowUpRight
             size={18}
-            className="mt-1 shrink-0 text-zinc-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#1454d8]"
+            className="mt-1 shrink-0 text-zinc-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[#249fd3]"
           />
         </Link>
 
@@ -168,7 +168,7 @@ export function ProductCard({ product }: ProductCardProps) {
             type="button"
             onClick={handleAddToCart}
             disabled={!product.is_in_stock || addMutation.isPending}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#1454d8] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#0d45bd] disabled:bg-zinc-300"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#249fd3] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#167fac] disabled:bg-zinc-300"
           >
             <ShoppingBag size={17} />
             {addMutation.isPending ? "Agregando..." : feedback || "Agregar al carrito"}

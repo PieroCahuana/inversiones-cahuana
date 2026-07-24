@@ -33,7 +33,7 @@ const AdminCommercePage = lazy(() => import("../pages/admin/AdminCommercePage").
 
 export function AppRoutes() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#f4f7fb] text-sm font-black text-[#1454d8]">Cargando módulo...</div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#f4f7fb] text-sm font-black text-[#249fd3]">Cargando módulo...</div>}>
     <Routes>
       <Route element={<MainLayout />}>
         <Route

@@ -7,7 +7,7 @@ export function ProductSort({ value = "-created_at", onChange }: ProductSortProp
   return (
     <label className="flex items-center gap-2 text-sm font-bold text-[#52647a]">
       <span className="hidden sm:inline">Ordenar:</span>
-      <select value={value} onChange={(event) => onChange(event.target.value)} className="h-11 rounded-xl border border-[#d8e1ec] bg-white px-3 text-sm font-bold text-[#263b57] outline-none focus:border-[#1454d8]">
+      <select value={value} onChange={(event) => onChange(event.target.value)} className="h-11 rounded-xl border border-[#d8e1ec] bg-white px-3 text-sm font-bold text-[#263b57] outline-none focus:border-[#249fd3]">
         <option value="-created_at">Más recientes</option>
         <option value="price">Menor precio</option>
         <option value="-price">Mayor precio</option>

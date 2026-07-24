@@ -4,7 +4,7 @@ import { Link } from "react-router";
 export function NotFoundPage() {
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#071d41] px-4 text-center text-white">
-      <div className="absolute left-1/2 top-1/2 size-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#1454d8]/35 blur-[130px]" />
+      <div className="absolute left-1/2 top-1/2 size-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#249fd3]/35 blur-[130px]" />
       <div className="relative max-w-2xl">
         <div className="mx-auto flex size-16 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.07] text-[#8fb5ff]"><Search size={26} /></div>
         <p className="mt-7 text-sm font-black uppercase tracking-[0.35em] text-[#8fb5ff]">Error 404</p>

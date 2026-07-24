@@ -18,11 +18,11 @@ interface ButtonProps
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-[#1454d8] text-white hover:bg-[#0d45bd] disabled:bg-zinc-300",
+    "bg-[#249fd3] text-white hover:bg-[#167fac] disabled:bg-zinc-300",
   secondary:
     "bg-white text-zinc-950 hover:bg-zinc-100 disabled:text-zinc-400",
   outline:
-    "border border-[#dce4ef] bg-transparent text-[#102a4e] hover:border-[#1454d8] hover:bg-[#1454d8] hover:text-white",
+    "border border-[#dce4ef] bg-transparent text-[#102a4e] hover:border-[#249fd3] hover:bg-[#249fd3] hover:text-white",
   ghost:
     "bg-transparent text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950",
 };

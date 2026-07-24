@@ -23,7 +23,7 @@ export function ProductGrid({ products, isLoading, isFetching, isError, onRetry,
         <RefreshCw size={28} className="mx-auto text-[#cf654f]" />
         <h2 className="mt-4 text-xl font-black text-[#7c382c]">No pudimos cargar el catálogo</h2>
         <p className="mt-2 text-sm text-[#9d6157]">Comprueba que el servidor Django esté funcionando e inténtalo nuevamente.</p>
-        <button type="button" onClick={onRetry} className="mt-5 rounded-xl bg-[#1454d8] px-5 py-3 text-sm font-black text-white hover:bg-[#0d45bd]">Reintentar</button>
+        <button type="button" onClick={onRetry} className="mt-5 rounded-xl bg-[#249fd3] px-5 py-3 text-sm font-black text-white hover:bg-[#167fac]">Reintentar</button>
       </div>
     );
   }
@@ -34,7 +34,7 @@ export function ProductGrid({ products, isLoading, isFetching, isError, onRetry,
         <PackageSearch size={34} className="mx-auto text-[#8a99aa]" />
         <h2 className="mt-4 text-xl font-black text-[#334862]">No encontramos productos</h2>
         <p className="mt-2 text-sm text-[#718094]">Prueba con otra búsqueda o elimina algunos filtros.</p>
-        <button type="button" onClick={onClear} className="mt-5 text-sm font-black text-[#1454d8] hover:underline">Limpiar todos los filtros</button>
+        <button type="button" onClick={onClear} className="mt-5 text-sm font-black text-[#249fd3] hover:underline">Limpiar todos los filtros</button>
       </div>
     );
   }
